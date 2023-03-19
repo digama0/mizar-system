@@ -70,6 +70,7 @@ var
   gPrimaries: array[1..2*MaxArgNbr] of TypPtr;
   LociOcc: array[1..2*MaxArgNbr] of boolean;
   gNonPermissive: boolean;
+  gRoundUpClusters: boolean = false;
   gPrimNbr,
   gBoundInc, { o ile inkrementowac zwiazane }
   gBoundForFirst, gBoundForSecond, gBoundForIt:integer;
@@ -2161,8 +2162,9 @@ begin
  if not lErrorOcc then
   begin
    lAbsNr:= 1 + ConditionalCluster.Count +  ConditionalCluster.fExtCount - CondClusterBase;
-   ConditionalCluster.InsertExt(new(CClusterPtr,
+   ConditionalCluster.Insert(new(CClusterPtr,
                        RegisterCluster(lAbsNr,ArticleID,lClusterPtr,lClusterPtr1,lTypList,llTyp)));
+   gRoundUpClusters:=true;
 {$IFDEF ANALYZER_REPORT}
     with ConditionalCluster do
      AReport.Out_CCluster(ConditionalCluster.Items^[Count+fExtCount-1]);
@@ -2287,10 +2289,9 @@ begin
  if not lErrorOcc then
  begin
   lAbsNr:= 1 + FunctorCluster.Count +  FunctorCluster.fExtCount - FuncClusterBase;
-// ##TODO: since Preparator makes use of the cluster immediately,
-//         this should rather be normal Insert. Any problem with that?
-    FunctorCluster.InsertExt(new(FClusterPtr,
+    FunctorCluster.Insert(new(FClusterPtr,
                      RegisterCluster(lAbsNr,ArticleID,lClusterPtr,lTypList,llTrm,llTyp)));
+    gRoundUpClusters:=true;
 {$IFDEF ANALYZER_REPORT}
     with FunctorCluster do
      AReport.Out_FCluster(FunctorCluster.Items^[Count+fExtCount-1]);
@@ -6182,10 +6183,10 @@ end;
 
 procedure Registration;
  var lDeclBase,i,z,pVarNbr: integer;
-     lRoundUpClusters: boolean;
 begin InFile.InPos(CurPos);
  gMaxArgNbr:=2*MaxArgNbr;
  gDefiniendumArgs:=nil;
+ gRoundUpClusters:=false;
  d:=g;
  D.LocPredNbr:=LocPredDef.Count;
  D.LocFuncNbr:=LocFuncDef.Count;
@@ -6352,13 +6353,11 @@ begin InFile.InPos(CurPos);
  AReport.Out_EndPos( CurPos);
  AReport.Out_XElEnd( elRegistrationBlock);
 {$ENDIF}
- lRoundUpClusters:=(ConditionalCluster.fExtCount > 0)
-    or (FunctorCluster.fExtCount > 0);
  DisposeTrmList(gDefiniendumArgs); gDefiniendumArgs:=nil;
  CloseDef;
  DisposeLevel(d);
  gMaxArgNbr:=MaxArgNbr;
- if lRoundUpClusters then
+ if gRoundUpClusters then
   begin
    NonZeroTyp^.RoundUp;
    for i:=0 to RegisteredCluster.Count-1 do
