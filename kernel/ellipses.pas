@@ -610,9 +610,9 @@ begin
    InfoString('New Type: '); InfoType(lTyp); InfoNewLine;
    {$ENDIF}      
    
-   lLeftList:=NewTrmList(lLeftGuardTrm, NewTrmList(NewVarTrm(ikTrmLocus,gLociNr),nil)); // t1 <= i;
-   lRightList:=NewTrmList(NewVarTrm(ikTrmLocus,gLociNr), NewTrmList(lRightGuardTrm,nil)); // i <= t2
-   
+   lLeftList:=NewTrmList(CopyTerm(lLeftGuardTrm), NewTrmList(NewVarTrm(ikTrmLocus,gLociNr),nil)); // t1 <= i;
+   lRightList:=NewTrmList(NewVarTrm(ikTrmLocus,gLociNr), NewTrmList(CopyTerm(lRightGuardTrm),nil)); // i <= t2
+
    lLeftGuardFrm:=new(PredFrmPtr,Init(ikFrmPred,gBuiltIn[rqLessOrEqual],lLeftList));
    lRightGuardFrm:=new(PredFrmPtr,Init(ikFrmPred,gBuiltIn[rqLessOrEqual],lRightList));
 
@@ -666,7 +666,7 @@ begin
        TrmSort:=ikTrmNumeral;
        VarNr:=gCurrentFlexConjunctNr;
       end else
-       fTrm:=gZeroFunctor;
+       fTrm:=CopyTerm(gZeroFunctor);
     end else Dec(VarNr);
 end;
 
@@ -684,7 +684,7 @@ begin
     ikTrmNumeral: lower:=VarTrmPtr(nLeftTrm)^.VarNr;
     ikTrmFunctor:
      begin  
-      gZeroFunctor:=CopyTerm(nLeftTrm);
+      gZeroFunctor:=nLeftTrm;
       AdjustTrm(gZeroFunctor,FuncNr,A1);
       if FuncNr = gBuiltIn[rqZeroNumber] then lower:=0;
      end;
