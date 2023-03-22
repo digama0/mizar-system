@@ -340,21 +340,21 @@ begin
       end;
       for i:=0 to fFormats.Count-1 do
       with FormatPtr(fFormats.Items^[i])^,fSymbol do
-       begin
+      begin
         if Kind in ['L','J'] then lKind:='G' else lKind:=Kind;
         if (Nr <= cumulnbr[lKind]) and (oldcumulnbr[lKind] < Nr) then
-         begin
+        begin
           fDictMarks.Up(j);
           break;
-         end
+        end
         else if (lKind = 'K') then with BracketFormatPtr(fFormats.Items^[i])^ do
-         if (fRightSymbolNr <= cumulnbr['L'])
+          if (fRightSymbolNr <= cumulnbr['L'])
               and (oldcumulnbr['L'] < fRightSymbolNr) then
           begin
-           fDictMarks.Up(j);
-           break;
-         end;
-       end;
+            fDictMarks.Up(j);
+            break;
+          end;
+      end;
     end;
 end; { ImpFormatsMarkingObj.MarkDicts }
 
@@ -501,7 +501,7 @@ transferer}
 procedure ImpNotationMarkingObj.MarkDicts;
 var oldcumulnbr,cumulnbr: array['A'..'Z'] of integer;
 i,j:integer;
-c:char;
+c,lKind:char;
 begin
   fDictMarks.InitNatFunc(fVocabularies.fCount,0);
   fillchar(cumulnbr,sizeof(cumulnbr),0);
@@ -512,22 +512,25 @@ begin
       for c:='A' to 'Z' do if c in AvailableSymbols then
       begin
         oldcumulnbr[c] := cumulnbr[c];
-	inc(cumulnbr[c],fSymbolCnt[c]);
+        inc(cumulnbr[c],fSymbolCnt[c]);
       end;
       for i:=0 to fNotation.Count-1 do
       with PatternPtr(fNotation.Items^[i])^,fFormat^,fSymbol do
-        if (Nr <= cumulnbr[Kind]) and (oldcumulnbr[Kind] < Nr) then
+      begin
+        if Kind in ['L','J'] then lKind:='G' else lKind:=Kind;
+        if (Nr <= cumulnbr[lKind]) and (oldcumulnbr[lKind] < Nr) then
         begin
-         fDictMarks.Up(j);
-	 break;
+          fDictMarks.Up(j);
+          break;
         end
-	else if (Kind = 'K') then with BracketFormatPtr(fFormat)^ do
-	if (fRightSymbolNr <= cumulnbr['L'])
-	and (oldcumulnbr['L'] < fRightSymbolNr) then
-	begin
-	  fDictMarks.Up(j);
-	  break;
-	end;
+        else if (lKind = 'K') then with BracketFormatPtr(fFormat)^ do
+        if (fRightSymbolNr <= cumulnbr['L'])
+        and (oldcumulnbr['L'] < fRightSymbolNr) then
+        begin
+          fDictMarks.Up(j);
+          break;
+        end;
+      end;
     end;
 end; { ImpNotationMarkingObj.MarkDicts }
 
