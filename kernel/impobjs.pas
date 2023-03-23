@@ -1348,11 +1348,11 @@ var i:integer;
 begin
   with fTheorems,fCounts do
   for i:=0 to Count-1 do
-   with TheoremPtr(Items^[i])^ do
+   with TheoremPtr(Items^[i])^,fDefConstr do
    begin
     MarkFrm(fTheorem);
-    if ('D' = fTheoKind) and  (fDefConstr.Kind <> ikError) then
-     fNbr[coAttribute].Up(fDefConstr.Nr);
+    if ('D' = fTheoKind) and (Kind <> ikError) then
+     fNbr[ConstructorKind(Kind)].Up(Nr);
    end;
 end; { ImpTheoremsObj.Mark }
 
